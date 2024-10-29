@@ -2,7 +2,6 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig((configEnv) => ({
-    base: process.env.LOCAL ? '/' : '/status/',
     plugins: [
         vue(),
     ],
