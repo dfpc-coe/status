@@ -10,14 +10,9 @@ const router = new VueRouter.createRouter({
     history: VueRouter.createWebHistory(),
     routes: [
         {
-            path: '/',
-            name: 'home',
-            component: () => import('./components/Home.vue'),
-        },
-        {
             path: '/:catchAll(.*)',
-            name: 'lost',
-            component: () => import('./components/Lost.vue')
+            name: 'home',
+            component: () => import('./components/Home.vue')
         },
     ]
 });
