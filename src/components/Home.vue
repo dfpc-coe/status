@@ -6,10 +6,19 @@
 
     <div class='py-4'>
         <div class='col-12 d-flex align-items-center justify-content-center'>
-            <IconCircleCheck :size='64' stoke='1' color='green'/>
+            <TablerLoading v-if='loading' desc=''/>
+            <template v-else>
+                <IconCircleCheck v-if='globalHealth === "green"' :size='64' stoke='1' :color='healthColour(globalHealth)'/>
+                <IconAlertTriangle v-else :size='64' stoke='1' :color='healthColour(globalHealth)'/>
+            </template>
         </div>
         <div class='col-12 d-flex align-items-center justify-content-center'>
-            <h1 class='user-select-none'>All services are online</h1>
+            <h1 class='user-select-none'>
+                <span v-if='globalHealth === "green"'>All services are </span>
+                <span v-else>Some services are </span>
+                <span v-if='loading'>...</span>
+                <span v-else v-text='healthVerb(globalHealth)'/>
+            </h1>
         </div>
         <div class='col-12 d-flex align-items-center justify-content-center'>
             <span class='subheader user-select-none'>As of <span v-text='requestDate'/></span>
@@ -81,6 +90,7 @@ import {
 } from '@tak-ps/vue-tabler';
 import {
     IconRefresh,
+    IconAlertTriangle,
     IconCircleCheck
 } from '@tabler/icons-vue';
 
@@ -96,6 +106,7 @@ const dates = computed(() => {
     return dates.reverse();
 });
 
+const globalHealth = ref('green'); // green, yellow, red
 const requestDate = ref(new Date());
 const loading = ref(true);
 
@@ -116,10 +127,47 @@ const config = ref<Config>({
     services: []
 })
 
+function healthVerb(health: string) {
+    if (health === 'yellow') {
+        return 'degraded'
+    } else if (health === 'red') {
+        return 'impacted'
+    } else if (health === 'green') {
+        return 'healthy'
+    } else {
+        return 'unknown';
+    }
+}
+
+function healthColour(health: string) {
+    if (health === 'yellow') {
+        return '#f76707'
+    } else if (health === 'red') {
+        return '#d63939' 
+    } else if (health === 'green') {
+        return '#2fb344';
+    } else {
+        return '#0f172a';
+    }
+}
+
 async function refresh() {
     loading.value = true;
     const res = await fetch(window.location.pathname + 'config.json');
     config.value = await res.json() as Config;
+
+    for (const service of config.value.services) {
+        for (const issue of service.issues) {
+            if (!issue.end) {
+                if (["green", "yellow"].includes(globalHealth.value) && issue.severity === "red") {
+                    globalHealth.value = "red";
+                } else if (["green"].includes(globalHealth.value) && issue.severity === "yellow") {
+                    globalHealth.value = "yellow";
+                }
+            }
+        }
+    }
+
     loading.value = false;
 }
 </script>
