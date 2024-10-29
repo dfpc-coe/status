@@ -23,13 +23,15 @@
                 <div class='ms-auto'>
                     <TablerIconButton
                         title='Refresh'
+                        @click='refresh'
                     >
                         <IconRefresh :size='32' stroke='1'/>
                     </TablerIconButton>
                 </div>
             </div>
             <div class='card-body'>
-                <template v-for='service in services'>
+                <TablerLoading v-if='loading'/>
+                <template v-else v-for='service in services'>
                     <div class='col-12 pb-2'>
                         <div class='d-flex align-items-center'>
                             <div class='d-flex align-items-center'>
@@ -74,6 +76,7 @@
 <script setup lang='ts'>
 import { ref, computed } from 'vue';
 import {
+    TablerLoading,
     TablerIconButton
 } from '@tak-ps/vue-tabler';
 import {
@@ -94,15 +97,21 @@ const dates = computed(() => {
 });
 
 const requestDate = ref(new Date());
+const loading = ref(false);
 
 const services = ref([{
     name: 'COTAK.gov'
 },{
-    name: 'TAK Serer'
+    name: 'TAK Server'
 },{
     name: 'Authentication Service'
 },{
     name: 'CloudTAK Service'
 }]);
 
+async function refresh() {
+    loading.value = true;
+
+    loading.value = false;
+}
 </script>
