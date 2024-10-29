@@ -31,7 +31,7 @@
             </div>
             <div class='card-body'>
                 <TablerLoading v-if='loading'/>
-                <template v-else v-for='service in services'>
+                <template v-else v-for='service in config.services'>
                     <div class='col-12 pb-2'>
                         <div class='d-flex align-items-center'>
                             <div class='d-flex align-items-center'>
@@ -74,7 +74,7 @@
 </style>
 
 <script setup lang='ts'>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import {
     TablerLoading,
     TablerIconButton
@@ -97,21 +97,29 @@ const dates = computed(() => {
 });
 
 const requestDate = ref(new Date());
-const loading = ref(false);
+const loading = ref(true);
 
-const services = ref([{
-    name: 'COTAK.gov'
-},{
-    name: 'TAK Server'
-},{
-    name: 'Authentication Service'
-},{
-    name: 'CloudTAK Service'
-}]);
+type Service = {
+    id: string;
+    name: string;
+};
+
+type Config = {
+    services: Service[]
+}
+
+onMounted(async () => {
+    await refresh();
+})
+
+const config = ref<Config>({
+    services: []
+})
 
 async function refresh() {
     loading.value = true;
-
+    const res = await fetch(window.location.pathname + 'config.json');
+    config.value = await res.json() as Config;
     loading.value = false;
 }
 </script>
