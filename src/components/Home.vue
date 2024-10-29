@@ -46,7 +46,12 @@
                             <div class='d-flex align-items-center'>
                                 <span
                                     v-tooltip='"Current Status"'
-                                    class="status-indicator status-green status-indicator-animated"
+                                    class="status-indicator status-indicator-animated"
+                                    :class='{
+                                        "status-green": service.health === "green",
+                                        "status-orange": service.health === "yellow",
+                                        "status-red": service.health === "red",
+                                    }'
                                 >
                                     <span class="status-indicator-circle"></span>
                                     <span class="status-indicator-circle"></span>
@@ -113,6 +118,7 @@ const loading = ref(true);
 type Service = {
     id: string;
     name: string;
+    health?: string;
 };
 
 type Config = {
@@ -145,12 +151,20 @@ async function refresh() {
     config.value = await res.json() as Config;
 
     for (const service of config.value.services) {
+        service.health = 'green';
+
         for (const issue of service.issues) {
             if (!issue.end) {
                 if (["green", "yellow"].includes(globalHealth.value) && issue.severity === "red") {
                     globalHealth.value = "red";
                 } else if (["green"].includes(globalHealth.value) && issue.severity === "yellow") {
                     globalHealth.value = "yellow";
+                }
+
+                if (["green", "yellow"].includes(service.health) && issue.severity === "red") {
+                    service.health = "red";
+                } else if (["green"].includes(service.health) && issue.severity === "yellow") {
+                    service.health = "yellow";
                 }
             }
         }
