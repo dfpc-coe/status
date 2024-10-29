@@ -8,8 +8,8 @@
         <div class='col-12 d-flex align-items-center justify-content-center'>
             <TablerLoading v-if='loading' desc=''/>
             <template v-else>
-                <IconCircleCheck v-if='globalHealth === "green"' :size='64' stoke='1' :color='healthColour(globalHealth)'/>
-                <IconAlertTriangle v-else :size='64' stoke='1' :color='healthColour(globalHealth)'/>
+                <IconCircleCheck v-if='globalHealth === "green"' :size='64' stoke='1' color='#2fb344'/>
+                <IconAlertTriangle v-else :size='64' stoke='1' :color='globalHealth === "yellow" ? "#f76707" : "#d63939"'/>
             </template>
         </div>
         <div class='col-12 d-flex align-items-center justify-content-center'>
@@ -136,18 +136,6 @@ function healthVerb(health: string) {
         return 'healthy'
     } else {
         return 'unknown';
-    }
-}
-
-function healthColour(health: string) {
-    if (health === 'yellow') {
-        return '#f76707'
-    } else if (health === 'red') {
-        return '#d63939' 
-    } else if (health === 'green') {
-        return '#2fb344';
-    } else {
-        return '#0f172a';
     }
 }
 
