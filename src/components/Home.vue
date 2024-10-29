@@ -62,8 +62,8 @@
                             </div>
                             <div class='ms-auto d-flex'>
                                 <div
-                                    v-for='date in dates'
-                                    v-tooltip='`${date.toLocaleString("default", { month: "long" })} ${date.getUTCDate()}`'
+                                    v-for='day in service.dates'
+                                    v-tooltip='`${day.date.toLocaleString("default", { month: "long" })} ${day.date.getUTCDate()}`'
                                     class='date bg-green rounded cursor-pointer'
                                     style='
                                         width: 12px;
@@ -99,18 +99,6 @@ import {
     IconCircleCheck
 } from '@tabler/icons-vue';
 
-const dates = computed(() => {
-    const dates = [];
-    const today = new Date();
-
-    for (let i = 0; i < 30; i++) {
-        const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
-        dates.push(date);
-    }
-
-    return dates.reverse();
-});
-
 const globalHealth = ref('green'); // green, yellow, red
 const requestDate = ref(new Date());
 const loading = ref(true);
@@ -119,6 +107,10 @@ type Service = {
     id: string;
     name: string;
     health?: string;
+    dates: Array<{
+        date: Date,
+        health: string;
+    }>
 };
 
 type Config = {
@@ -152,6 +144,20 @@ async function refresh() {
 
     for (const service of config.value.services) {
         service.health = 'green';
+
+        const dates: Map<string, {
+            health: string;
+            date: Date;
+        }> = new Map();
+
+        const today = new Date();
+
+        for (let i = 0; i < 30; i++) {
+            const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+            dates.set(`${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()}`, { health: 'green', date });
+        }
+
+        service.dates = Array.from(dates.values()).reverse();
 
         for (const issue of service.issues) {
             if (!issue.end) {
