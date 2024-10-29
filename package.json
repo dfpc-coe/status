@@ -4,7 +4,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "serve": "vite serve --port 8080",
+        "serve": "LOCAL=true vite serve --port 8080",
         "check": "vue-tsc",
         "build": "vite build",
         "lint": "eslint ./src/"
