@@ -1,0 +1,15 @@
+{
+    "services": [{
+        "id": "cotak",
+        "name": "COTAK.gov"
+    },{
+        "id": "tak",
+        "name": "TAK Server"
+    },{
+        "id": "ldap",
+        "name": "Active Directory Service"
+    },{
+        "id": "cloudtak",
+        "name": "CloudTAK"
+    }]
+}
