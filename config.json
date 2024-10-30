@@ -20,6 +20,11 @@
             "id": "cloudtak",
             "name": "CloudTAK",
             "issues": []
+        },
+        {
+            "id": "media",
+            "name": "Media Server",
+            "issues": []
         }
     ]
 }
