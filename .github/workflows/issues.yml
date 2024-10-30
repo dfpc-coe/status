@@ -26,6 +26,12 @@ jobs:
       - name: Checkout Build
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+
+      - name: npm install
+        run: npm install
+
       - name: actions.ts
         run: npx tsx actions.ts
         env:
