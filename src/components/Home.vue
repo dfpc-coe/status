@@ -99,6 +99,7 @@
                 <div class='card-body'>
                     <TablerNone v-if='!serviceDate.issues || serviceDate.issues.length === 0' label='incidents' :create='false'/>
                     <template v-else v-for='issue in serviceDate.issues'>
+                        <h1 v-text='issueMap.get(issue) ? issueMap.get(issue).title : "No Title"'/>
                         <TablerMarkdown :markdown='issueMap.get(issue) ? issueMap.get(issue).body : ""'/>
                     </template>
                 </div>
@@ -236,6 +237,7 @@ async function fetchIssue(repo, issueid): Promise<Static<typeof Issue>> {
         health,
         start: issue.created_at,
         end: issue.closed_at || undefined,
+        title: issue.title,
         body: issue.body
     };
 }

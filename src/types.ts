@@ -10,6 +10,7 @@ export const Issue = Type.Object({
     health: Type.Enum(Health),
     start: Type.String(),
     end: Type.Optional(Type.String()),
+    title: Type.String(),
     body: Type.String(),
 })
 
