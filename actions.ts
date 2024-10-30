@@ -12,7 +12,7 @@ const labels = issue.labels.map((label) => { return label.description });
 if (labels.includes('red')) health = Health.RED;
 if (labels.includes('yellow')) health = Health.YELLOW;
 
-if (!fs.exists(new URL('issues/', import.meta.url))){
+if (!fs.existsSync(new URL('issues/', import.meta.url))){
     fs.mkdirSync(new URL('issues/', import.meta.url));
 }
 
