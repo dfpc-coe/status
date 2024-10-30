@@ -75,7 +75,7 @@
                                         style='
                                             width: 12px;
                                             height: 32px;
-                                            margin-right: 1px;
+                                            margin-right: 2px;
                                         '
                                     />
                                 </div>
@@ -114,7 +114,7 @@
 <script setup lang='ts'>
 import { ref, computed, onMounted } from 'vue';
 import type { Static } from '@sinclair/typebox';
-import { Issue, Health } from '../types.ts'
+import { Issue, Health, Config } from '../types.ts'
 import {
     TablerNone,
     TablerLoading,
@@ -137,7 +137,7 @@ onMounted(async () => {
     await refresh();
 })
 
-const config = ref<Config>({
+const config = ref<Static<typeof Config>>({
     services: []
 })
 
@@ -159,7 +159,7 @@ async function refresh() {
     globalHealth.value = Health.GREEN
 
     const res = await fetch(window.location.pathname + 'config.json');
-    config.value = await res.json() as Config;
+    config.value = await res.json() as Static<typeof Config>;
 
     for (const service of config.value.services) {
         service.health = Health.GREEN;
@@ -167,28 +167,29 @@ async function refresh() {
         const dates: Map<string, {
             health: string;
             date: Date;
+            issues: Array<number>;
         }> = new Map();
 
         const today = new Date();
 
         for (let i = 0; i < 30; i++) {
             const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
-            dates.set(`${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()}`, { health: Health.GREEN, date });
+            dates.set(`${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()}`, { health: Health.GREEN, date, issues: [] });
         }
 
         for (const issueid of service.issues) {
             const issue = await fetchIssue(config.value.repo, issueid);
 
             if (!issue.end) {
-                if (["green", "yellow"].includes(globalHealth.value) && issue.severity === "red") {
+                if (["green", "yellow"].includes(globalHealth.value) && issue.health === Health.RED) {
                     globalHealth.value = "red";
-                } else if (["green"].includes(globalHealth.value) && issue.severity === "yellow") {
+                } else if (["green"].includes(globalHealth.value) && issue.health === Health.YELLOW) {
                     globalHealth.value = "yellow";
                 }
 
-                if (["green", "yellow"].includes(service.health) && issue.severity === "red") {
+                if (["green", "yellow"].includes(service.health) && issue.health === Health.RED) {
                     service.health = "red";
-                } else if (["green"].includes(service.health) && issue.severity === "yellow") {
+                } else if (["green"].includes(service.health) && issue.health === Health.YELLOW) {
                     service.health = "yellow";
                 }
             }
@@ -197,6 +198,8 @@ async function refresh() {
                 // We only display the last 30 days, ignore days before this
                 const serviceDate = dates.get(day);
                 if (!serviceDate) continue;
+
+                if (!serviceDate.issues.includes(issueid)) serviceDate.issues.push(issueid);
 
                 if (["green", "yellow"].includes(serviceDate.health) && issue.severity === "red") {
                     serviceDate.health = "red";
@@ -217,9 +220,17 @@ async function fetchIssue(repo, issueid): Promise<Static<typeof Issue>> {
 
     const issue = await res.json()
 
+    let health = Health.GREEN;
+
+    const labels = issue.labels.map((label) => { return label.description });
+
+    if (labels.includes('red')) health = Health.RED;
+    if (labels.includes('yellow')) health = Health.YELLOW;
+
     return {
+        health,
         start: issue.created_at,
-        end: issue.closed_at,
+        end: issue.closed_at || undefined,
         body: issue.body
     };
 }
@@ -234,7 +245,6 @@ function daysBetween(startDate: string, endDate?: string): Array<string> {
         dates.push(`${currentDate.getUTCFullYear()}-${currentDate.getUTCMonth() + 1}-${currentDate.getUTCDate()}`);
         currentDate.setDate(currentDate.getDate() + 1);
     }
-    console.error(dates);
 
     return dates;
 }
