@@ -26,3 +26,6 @@ fs.writeFileSync(new URL(`issues/${issue.number}`, import.meta.url), JSON.string
     body: issue.body
 }, null, 4));
 
+const config = JSON.parse(String(fs.readFileSync(new URL(`./config.json`, import.meta.url))))
+
+console.error(config);
