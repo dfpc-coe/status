@@ -33,7 +33,11 @@ const config = JSON.parse(String(fs.readFileSync(new URL(`./config.json`, import
 
 for (const service of services) {
     if (labels.includes(service.id)) {
+        // Handle Label being added to issue
         service.issues.push(issue.id)
+    } else if (service.issues.includes(issue.id) {
+        // Handle Label being removed from issue
+        service.issues.splice(service.issues.indexOf(issue.id), 1)
     }
 }
 
