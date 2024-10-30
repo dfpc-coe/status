@@ -1,122 +1,165 @@
 <template>
-<div class='page-body'>
-    <div class='col-12 d-flex align-items-center justify-content-center py-4'>
-        <img src='/logo.png' alt='COTAK Logo' height='128' width='128'/>
-    </div>
+    <div class='page-body'>
+        <div class='col-12 d-flex align-items-center justify-content-center py-4'>
+            <img
+                src='/logo.png'
+                alt='COTAK Logo'
+                height='128'
+                width='128'
+            >
+        </div>
 
-    <div class='py-4'>
-        <div class='col-12 d-flex align-items-center justify-content-center'>
-            <TablerLoading v-if='loading' desc=''/>
-            <template v-else>
-                <IconCircleCheck v-if='globalHealth === "green"' :size='64' stoke='1' color='#2fb344'/>
-                <IconAlertTriangle v-else :size='64' stoke='1' :color='globalHealth === "yellow" ? "#f76707" : "#d63939"'/>
-            </template>
+        <div class='py-4'>
+            <div class='col-12 d-flex align-items-center justify-content-center'>
+                <TablerLoading
+                    v-if='loading'
+                    desc=''
+                />
+                <template v-else>
+                    <IconCircleCheck
+                        v-if='globalHealth === "green"'
+                        :size='64'
+                        stoke='1'
+                        color='#2fb344'
+                    />
+                    <IconAlertTriangle
+                        v-else
+                        :size='64'
+                        stoke='1'
+                        :color='globalHealth === "yellow" ? "#f76707" : "#d63939"'
+                    />
+                </template>
+            </div>
+            <div class='col-12 d-flex align-items-center justify-content-center'>
+                <h1 class='user-select-none'>
+                    <span v-if='globalHealth === "green"'>All services are </span>
+                    <span v-else>Some services are </span>
+                    <span v-if='loading'>...</span>
+                    <span
+                        v-else
+                        v-text='healthVerb(globalHealth)'
+                    />
+                </h1>
+            </div>
+            <div class='col-12 d-flex align-items-center justify-content-center'>
+                <span class='subheader user-select-none'>As of <span v-text='requestDate' /></span>
+            </div>
         </div>
-        <div class='col-12 d-flex align-items-center justify-content-center'>
-            <h1 class='user-select-none'>
-                <span v-if='globalHealth === "green"'>All services are </span>
-                <span v-else>Some services are </span>
-                <span v-if='loading'>...</span>
-                <span v-else v-text='healthVerb(globalHealth)'/>
-            </h1>
-        </div>
-        <div class='col-12 d-flex align-items-center justify-content-center'>
-            <span class='subheader user-select-none'>As of <span v-text='requestDate'/></span>
-        </div>
-    </div>
 
-    <div class='container pt-4'>
-        <div class='row row-cards'>
-            <div class='card'>
-                <div class='card-header'>
-                    <div class='card-title'>Services</div>
-                    <div class='ms-auto'>
-                        <TablerIconButton
-                            title='Refresh'
-                            @click='refresh'
-                        >
-                            <IconRefresh :size='32' stroke='1'/>
-                        </TablerIconButton>
+        <div class='container pt-4'>
+            <div class='row row-cards'>
+                <div class='card'>
+                    <div class='card-header'>
+                        <div class='card-title'>
+                            Services
+                        </div>
+                        <div class='ms-auto'>
+                            <TablerIconButton
+                                title='Refresh'
+                                @click='refresh'
+                            >
+                                <IconRefresh
+                                    :size='32'
+                                    stroke='1'
+                                />
+                            </TablerIconButton>
+                        </div>
                     </div>
-                </div>
-                <div class='card-body'>
-                    <TablerLoading v-if='loading'/>
-                    <template v-else v-for='service in config.services'>
-                        <div class='col-12 pb-2'>
-                            <div class='d-flex align-items-center'>
+                    <div class='card-body'>
+                        <TablerLoading v-if='loading' />
+                        <template
+                            v-for='service in config.services'
+                            v-else
+                        >
+                            <div class='col-12 pb-2'>
                                 <div class='d-flex align-items-center'>
-                                    <span
-                                        v-tooltip='"Current Status"'
-                                        class="status-indicator status-indicator-animated"
-                                        :class='{
-                                            "status-green": service.health === "green",
-                                            "status-orange": service.health === "yellow",
-                                            "status-red": service.health === "red",
-                                        }'
-                                    >
-                                        <span class="status-indicator-circle"></span>
-                                        <span class="status-indicator-circle"></span>
-                                        <span class="status-indicator-circle"></span>
-                                    </span>
+                                    <div class='d-flex align-items-center'>
+                                        <span
+                                            v-tooltip='"Current Status"'
+                                            class='status-indicator status-indicator-animated'
+                                            :class='{
+                                                "status-green": service.health === "green",
+                                                "status-orange": service.health === "yellow",
+                                                "status-red": service.health === "red",
+                                            }'
+                                        >
+                                            <span class='status-indicator-circle' />
+                                            <span class='status-indicator-circle' />
+                                            <span class='status-indicator-circle' />
+                                        </span>
 
-                                    <span class='mx-2 subheader' v-text='service.name'/>
-                                </div>
-                                <div class='ms-auto d-flex'>
-                                    <div
-                                        v-for='day in service.dates'
-                                        v-tooltip='`${day.date.toLocaleString("default", { month: "long" })} ${day.date.getUTCDate()} UTC`'
-                                        @click='serviceDate = day'
-                                        class='date rounded cursor-pointer'
-                                        :class='{
-                                            "bg-green": day.health === "green",
-                                            "bg-orange": day.health === "yellow",
-                                            "bg-red": day.health === "red"
-                                        }'
-                                        style='
+                                        <span
+                                            class='mx-2 subheader'
+                                            v-text='service.name'
+                                        />
+                                    </div>
+                                    <div class='ms-auto d-flex'>
+                                        <div
+                                            v-for='day in service.dates'
+                                            v-tooltip='`${day.date.toLocaleString("default", { month: "long" })} ${day.date.getUTCDate()} UTC`'
+                                            class='date rounded cursor-pointer'
+                                            :class='{
+                                                "bg-green": day.health === "green",
+                                                "bg-orange": day.health === "yellow",
+                                                "bg-red": day.health === "red"
+                                            }'
+                                            style='
                                             width: 12px;
                                             height: 32px;
                                             margin-right: 2px;
                                         '
-                                    />
+                                            @click='serviceDate = day'
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </template>
-                </div>
-            </div>
-            <div v-if='serviceDate' class='card'>
-                <div class='card-header'>
-                    <div class='card-title' v-text='serviceDate.date + " Incidents"'></div>
-                    <div class='ms-auto'>
-                        <TablerIconButton
-                            title='Close'
-                            @click='serviceDate = undefined'
-                        >
-                            <IconX :size='32' stroke='1'/>
-                        </TablerIconButton>
+                        </template>
                     </div>
                 </div>
-                <div class='card-body'>
-                    <TablerNone v-if='!serviceDate.issues || serviceDate.issues.length === 0' label='incidents' :create='false'/>
-                    <template v-else v-for='issue in serviceDate.issues'>
-                        <h1 v-text='issueMap.get(issue) ? issueMap.get(issue).title : "No Title"'/>
-                        <TablerMarkdown :markdown='issueMap.get(issue) ? issueMap.get(issue).body : ""'/>
-                    </template>
+                <div
+                    v-if='serviceDate'
+                    class='card'
+                >
+                    <div class='card-header'>
+                        <div
+                            class='card-title'
+                            v-text='serviceDate.date + " Incidents"'
+                        />
+                        <div class='ms-auto'>
+                            <TablerIconButton
+                                title='Close'
+                                @click='serviceDate = undefined'
+                            >
+                                <IconX
+                                    :size='32'
+                                    stroke='1'
+                                />
+                            </TablerIconButton>
+                        </div>
+                    </div>
+                    <div class='card-body'>
+                        <TablerNone
+                            v-if='!serviceDate.issues || serviceDate.issues.length === 0'
+                            label='incidents'
+                            :create='false'
+                        />
+                        <template
+                            :key='issue.id'
+                            v-for='issue in serviceDate.issues'
+                            v-else
+                        >
+                            <h1 v-text='issueMap.get(issue) ? issueMap.get(issue).title : "No Title"' />
+                            <TablerMarkdown :markdown='issueMap.get(issue) ? issueMap.get(issue).body : ""' />
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </template>
 
-<style>
-.date:hover {
-    filter: saturate(0.25);
-}
-</style>
-
 <script setup lang='ts'>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import type { Static } from '@sinclair/typebox';
 import { Issue, Health, Config, ServiceDate } from '../types.ts'
 import {
@@ -260,3 +303,9 @@ function daysBetween(startDate: string, endDate?: string): Array<string> {
 }
 
 </script>
+
+<style>
+.date:hover {
+    filter: saturate(0.25);
+}
+</style>

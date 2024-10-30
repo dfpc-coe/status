@@ -7,6 +7,8 @@ export enum Health {
 }
 
 export const Issue = Type.Object({
+    id: Type.Number(),
+    username: Type.String(),
     health: Type.Enum(Health),
     start: Type.String(),
     end: Type.Optional(Type.String()),

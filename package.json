@@ -7,7 +7,7 @@
         "serve": "vite serve --port 8080",
         "check": "vue-tsc",
         "build": "vite build && cp config.json dist/",
-        "lint": "eslint ./src/"
+        "lint": "eslint actions.ts ./src/"
     },
     "dependencies": {
         "@sinclair/typebox": "^0.33.17",
