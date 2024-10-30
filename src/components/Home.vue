@@ -99,7 +99,7 @@
                 <div class='card-body'>
                     <TablerNone v-if='!serviceDate.issues || serviceDate.issues.length === 0' label='incidents' :create='false'/>
                     <template v-else v-for='issue in serviceDate.issues'>
-                        <TablerMarkdown :markdown='issue.body'/>
+                        <TablerMarkdown :markdown='issueMap.get(issue) ? issueMap.get(issue).body : ""'/>
                     </template>
                 </div>
             </div>
