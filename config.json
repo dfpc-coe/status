@@ -4,9 +4,7 @@
         {
             "id": "cotak",
             "name": "COTAK.gov",
-            "issues": [
-                1
-            ]
+            "issues": []
         },
         {
             "id": "tak",
@@ -16,9 +14,7 @@
         {
             "id": "ldap",
             "name": "Active Directory Service",
-            "issues": [
-                1
-            ]
+            "issues": []
         },
         {
             "id": "cloudtak",
