@@ -32,10 +32,10 @@ fs.writeFileSync(new URL(`issues/${issue.id}.json`, import.meta.url), JSON.strin
 const config = JSON.parse(String(fs.readFileSync(new URL(`./config.json`, import.meta.url))))
 
 for (const service of config.services) {
-    if (labels.includes(service.id)) {
+    if (labels.includes(service.id) && !service.issues.includes(issue.id)) {
         // Handle Label being added to issue
         service.issues.push(issue.id)
-    } else if (service.issues.includes(issue.id)) {
+    } else if (!labels.includes(service.id) && service.issues.includes(issue.id)) {
         // Handle Label being removed from issue
         service.issues.splice(service.issues.indexOf(issue.id), 1)
     }
