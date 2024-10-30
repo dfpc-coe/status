@@ -65,7 +65,7 @@
                                     <div
                                         v-for='day in service.dates'
                                         v-tooltip='`${day.date.toLocaleString("default", { month: "long" })} ${day.date.getUTCDate()} UTC`'
-                                        @click='individual = `${day.date.getUTCFullYear()}-${day.date.getUTCMonth() + 1}-${day.date.getUTCDate()}`'
+                                        @click='serviceDate = day'
                                         class='date rounded cursor-pointer'
                                         :class='{
                                             "bg-green": day.health === "green",
@@ -84,20 +84,23 @@
                     </template>
                 </div>
             </div>
-            <div v-if='individual' class='card'>
+            <div v-if='serviceDate' class='card'>
                 <div class='card-header'>
-                    <div class='card-title' v-text='individual + " Incidents"'></div>
+                    <div class='card-title' v-text='serviceDate.date + " Incidents"'></div>
                     <div class='ms-auto'>
                         <TablerIconButton
                             title='Close'
-                            @click='individual = undefined'
+                            @click='serviceDate = undefined'
                         >
                             <IconX :size='32' stroke='1'/>
                         </TablerIconButton>
                     </div>
                 </div>
                 <div class='card-body'>
-                    <TablerNone label='Incidents' :create='false'/>
+                    <TablerNone v-if='!serviceDate.issues || serviceDate.issues.length === 0' label='incidents' :create='false'/>
+                    <template v-else v-for='issue in serviceDate.issues'>
+                        <TablerMarkdown :markdown='issue.body'/>
+                    </template>
                 </div>
             </div>
         </div>
@@ -114,7 +117,7 @@
 <script setup lang='ts'>
 import { ref, computed, onMounted } from 'vue';
 import type { Static } from '@sinclair/typebox';
-import { Issue, Health, Config } from '../types.ts'
+import { Issue, Health, Config, ServiceDate } from '../types.ts'
 import {
     TablerNone,
     TablerLoading,
@@ -131,7 +134,7 @@ import {
 const globalHealth = ref(Health.GREEN);
 const requestDate = ref(new Date());
 const loading = ref(true);
-const individual = ref<string | undefined>();
+const serviceDate = ref<Static<typeof ServiceDate> | undefined>();
 
 onMounted(async () => {
     await refresh();
@@ -140,6 +143,8 @@ onMounted(async () => {
 const config = ref<Static<typeof Config>>({
     services: []
 })
+
+const issueMap: Map<number, Static<typeof Issue>> = new Map();
 
 function healthVerb(health: string) {
     if (health === Health.YELLOW) {
@@ -164,11 +169,7 @@ async function refresh() {
     for (const service of config.value.services) {
         service.health = Health.GREEN;
 
-        const dates: Map<string, {
-            health: string;
-            date: Date;
-            issues: Array<number>;
-        }> = new Map();
+        const dates: Map<string, Static<typeof ServiceDate>> = new Map();
 
         const today = new Date();
 
@@ -180,6 +181,8 @@ async function refresh() {
         for (const issueid of service.issues) {
             const issue = await fetchIssue(config.value.repo, issueid);
 
+            issueMap.set(issueid, issue);
+
             if (!issue.end) {
                 if (["green", "yellow"].includes(globalHealth.value) && issue.health === Health.RED) {
                     globalHealth.value = "red";
@@ -187,10 +190,10 @@ async function refresh() {
                     globalHealth.value = "yellow";
                 }
 
-                if (["green", "yellow"].includes(service.health) && issue.health === Health.RED) {
-                    service.health = "red";
-                } else if (["green"].includes(service.health) && issue.health === Health.YELLOW) {
-                    service.health = "yellow";
+                if ([Health.GREEN, Health.YELLOW].includes(service.health) && issue.health === Health.RED) {
+                    service.health = Health.RED;
+                } else if ([Health.GREEN].includes(service.health) && issue.health === Health.YELLOW) {
+                    service.health = Health.YELLOW;
                 }
             }
 
@@ -199,12 +202,14 @@ async function refresh() {
                 const serviceDate = dates.get(day);
                 if (!serviceDate) continue;
 
-                if (!serviceDate.issues.includes(issueid)) serviceDate.issues.push(issueid);
+                if (!serviceDate.issues.includes(issueid)) {
+                    serviceDate.issues.push(issueid);
+                }
 
-                if (["green", "yellow"].includes(serviceDate.health) && issue.severity === "red") {
-                    serviceDate.health = "red";
-                } else if (["green"].includes(serviceDate.health) && issue.severity === "yellow") {
-                    serviceDate.health = "yellow";
+                if ([Health.GREEN, Health.YELLOW].includes(serviceDate.health) && issue.health === Health.RED) {
+                    serviceDate.health = Health.RED;
+                } else if ([Health.GREEN].includes(serviceDate.health) && issue.health === Health.YELLOW) {
+                    serviceDate.health = Health.YELLOW;
                 }
             }
         }

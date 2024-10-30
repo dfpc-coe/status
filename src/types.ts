@@ -13,15 +13,17 @@ export const Issue = Type.Object({
     body: Type.String(),
 })
 
+export const ServiceDate = Type.Object({
+    date: Type.Date(),
+    health: Type.Enum(Health),
+    issues: Type.Array(Type.Integer())
+})
+
 export const Service = Type.Object({
     id: Type.String(),
     name: Type.String(),
     health: Type.Optional(Type.Enum(Health)),
-    dates: Type.Optional(Type.Array(Type.Object({
-        date: Type.Date(),
-        health: Type.Enum(Health),
-        issues: Type.Array(Type.Integer())
-    })))
+    dates: Type.Optional(Type.Array(ServiceDate))
 });
 
 export const Config = Type.Object({
