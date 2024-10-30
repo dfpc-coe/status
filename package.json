@@ -6,7 +6,7 @@
     "scripts": {
         "serve": "vite serve --port 8080",
         "check": "vue-tsc",
-        "build": "vite build && cp config.json dist/",
+        "build": "vite build && cp config.json dist/ && mkdir -p dist/issues/ && cp issues/* dist/issues/",
         "lint": "eslint actions.ts ./src/"
     },
     "dependencies": {

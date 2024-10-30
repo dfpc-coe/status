@@ -16,7 +16,7 @@ if (!fs.existsSync(new URL('issues/', import.meta.url))){
     fs.mkdirSync(new URL('issues/', import.meta.url));
 }
 
-fs.writeFileSync(new URL(`issues/${issue.number}`, import.meta.url), JSON.stringify({
+fs.writeFileSync(new URL(`issues/${issue.number}.json`, import.meta.url), JSON.stringify({
     id: issue.number,
     username: issue.user.login,
     health,
