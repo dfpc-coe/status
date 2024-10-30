@@ -63,8 +63,13 @@
                             <div class='ms-auto d-flex'>
                                 <div
                                     v-for='day in service.dates'
-                                    v-tooltip='`${day.date.toLocaleString("default", { month: "long" })} ${day.date.getUTCDate()}`'
-                                    class='date bg-green rounded cursor-pointer'
+                                    v-tooltip='`${day.date.toLocaleString("default", { month: "long" })} ${day.date.getUTCDate()} UTC`'
+                                    class='date rounded cursor-pointer'
+                                    :class='{
+                                        "bg-green": day.health === "green",
+                                        "bg-orange": day.health === "yellow",
+                                        "bg-red": day.health === "red"
+                                    }'
                                     style='
                                         width: 12px;
                                         height: 32px;
@@ -107,7 +112,7 @@ type Service = {
     id: string;
     name: string;
     health?: string;
-    dates: Array<{
+    dates?: Array<{
         date: Date,
         health: string;
     }>
@@ -139,6 +144,9 @@ function healthVerb(health: string) {
 
 async function refresh() {
     loading.value = true;
+
+    globalHealth.value = 'green'
+
     const res = await fetch(window.location.pathname + 'config.json');
     config.value = await res.json() as Config;
 
@@ -157,8 +165,6 @@ async function refresh() {
             dates.set(`${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()}`, { health: 'green', date });
         }
 
-        service.dates = Array.from(dates.values()).reverse();
-
         for (const issue of service.issues) {
             if (!issue.end) {
                 if (["green", "yellow"].includes(globalHealth.value) && issue.severity === "red") {
@@ -173,9 +179,39 @@ async function refresh() {
                     service.health = "yellow";
                 }
             }
+
+            for (const day of daysBetween(issue.start, issue.end)) {
+                // We only display the last 30 days, ignore days before this
+                const serviceDate = dates.get(day);
+                if (!serviceDate) continue;
+
+                if (["green", "yellow"].includes(serviceDate.health) && issue.severity === "red") {
+                    serviceDate.health = "red";
+                } else if (["green"].includes(serviceDate.health) && issue.severity === "yellow") {
+                    serviceDate.health = "yellow";
+                }
+            }
         }
+
+        service.dates = Array.from(dates.values()).reverse();
     }
 
     loading.value = false;
 }
+
+function daysBetween(startDate: string, endDate?: string): Array<string> {
+    const currentDate = new Date(startDate);
+    const endDateCopy = endDate ? new Date(endDate) : new Date();
+    endDateCopy.setHours(23, 59, 59, 0);
+
+    const dates = [];
+    while (currentDate <= endDateCopy) {
+        dates.push(`${currentDate.getUTCFullYear()}-${currentDate.getUTCMonth() + 1}-${currentDate.getUTCDate()}`);
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+    console.error(dates);
+
+    return dates;
+}
+
 </script>

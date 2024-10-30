@@ -10,7 +10,7 @@
             "severity": "yellow",
             "title": "Data Sync API Issues",
             "start": "2024-10-28T22:11:41.762Z",
-            "end1": "2024-10-29T10:11:41.762Z"
+            "end": "2024-10-29T10:11:41.762Z"
         }]
     },{
         "id": "ldap",
