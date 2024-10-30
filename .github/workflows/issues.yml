@@ -1,0 +1,35 @@
+name: Github Pages
+
+on:
+  issues:
+    - opened
+    - edited
+    - deleted
+    - transferred
+    - closed
+    - reopened
+    - labeled
+    - unlabeled
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Build
+        uses: actions/checkout@v4
+
+      - name: node actions.js
+        run: node actions.js
+        env:
+          GITHUB_ISSUE: {{ github.event.issue }}
