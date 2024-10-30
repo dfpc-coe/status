@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { Static } from '@sinclair/typebox';
+import type { Static } from '@sinclair/typebox';
 import { Issue, Health } from './src/types.js';
 
 if (!process.env.GITHUB_ISSUE) throw new Error('GITHUB_ISSUE Env Var must be set')
