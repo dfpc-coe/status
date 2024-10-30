@@ -26,60 +26,79 @@
     </div>
 
     <div class='container pt-4'>
-        <div class='card'>
-            <div class='card-header'>
-                <div class='card-title'>Services</div>
-                <div class='ms-auto'>
-                    <TablerIconButton
-                        title='Refresh'
-                        @click='refresh'
-                    >
-                        <IconRefresh :size='32' stroke='1'/>
-                    </TablerIconButton>
+        <div class='row row-cards'>
+            <div class='card'>
+                <div class='card-header'>
+                    <div class='card-title'>Services</div>
+                    <div class='ms-auto'>
+                        <TablerIconButton
+                            title='Refresh'
+                            @click='refresh'
+                        >
+                            <IconRefresh :size='32' stroke='1'/>
+                        </TablerIconButton>
+                    </div>
                 </div>
-            </div>
-            <div class='card-body'>
-                <TablerLoading v-if='loading'/>
-                <template v-else v-for='service in config.services'>
-                    <div class='col-12 pb-2'>
-                        <div class='d-flex align-items-center'>
+                <div class='card-body'>
+                    <TablerLoading v-if='loading'/>
+                    <template v-else v-for='service in config.services'>
+                        <div class='col-12 pb-2'>
                             <div class='d-flex align-items-center'>
-                                <span
-                                    v-tooltip='"Current Status"'
-                                    class="status-indicator status-indicator-animated"
-                                    :class='{
-                                        "status-green": service.health === "green",
-                                        "status-orange": service.health === "yellow",
-                                        "status-red": service.health === "red",
-                                    }'
-                                >
-                                    <span class="status-indicator-circle"></span>
-                                    <span class="status-indicator-circle"></span>
-                                    <span class="status-indicator-circle"></span>
-                                </span>
+                                <div class='d-flex align-items-center'>
+                                    <span
+                                        v-tooltip='"Current Status"'
+                                        class="status-indicator status-indicator-animated"
+                                        :class='{
+                                            "status-green": service.health === "green",
+                                            "status-orange": service.health === "yellow",
+                                            "status-red": service.health === "red",
+                                        }'
+                                    >
+                                        <span class="status-indicator-circle"></span>
+                                        <span class="status-indicator-circle"></span>
+                                        <span class="status-indicator-circle"></span>
+                                    </span>
 
-                                <span class='mx-2 subheader' v-text='service.name'/>
-                            </div>
-                            <div class='ms-auto d-flex'>
-                                <div
-                                    v-for='day in service.dates'
-                                    v-tooltip='`${day.date.toLocaleString("default", { month: "long" })} ${day.date.getUTCDate()} UTC`'
-                                    class='date rounded cursor-pointer'
-                                    :class='{
-                                        "bg-green": day.health === "green",
-                                        "bg-orange": day.health === "yellow",
-                                        "bg-red": day.health === "red"
-                                    }'
-                                    style='
-                                        width: 12px;
-                                        height: 32px;
-                                        margin-right: 1px;
-                                    '
-                                />
+                                    <span class='mx-2 subheader' v-text='service.name'/>
+                                </div>
+                                <div class='ms-auto d-flex'>
+                                    <div
+                                        v-for='day in service.dates'
+                                        v-tooltip='`${day.date.toLocaleString("default", { month: "long" })} ${day.date.getUTCDate()} UTC`'
+                                        @click='individual = `${day.date.getUTCFullYear()}-${day.date.getUTCMonth() + 1}-${day.date.getUTCDate()}`'
+                                        class='date rounded cursor-pointer'
+                                        :class='{
+                                            "bg-green": day.health === "green",
+                                            "bg-orange": day.health === "yellow",
+                                            "bg-red": day.health === "red"
+                                        }'
+                                        style='
+                                            width: 12px;
+                                            height: 32px;
+                                            margin-right: 1px;
+                                        '
+                                    />
+                                </div>
                             </div>
                         </div>
+                    </template>
+                </div>
+            </div>
+            <div v-if='individual' class='card'>
+                <div class='card-header'>
+                    <div class='card-title' v-text='individual + " Incidents"'></div>
+                    <div class='ms-auto'>
+                        <TablerIconButton
+                            title='Close'
+                            @click='individual = undefined'
+                        >
+                            <IconX :size='32' stroke='1'/>
+                        </TablerIconButton>
                     </div>
-                </template>
+                </div>
+                <div class='card-body'>
+                    <TablerNone label='Incidents' :create='false'/>
+                </div>
             </div>
         </div>
     </div>
@@ -94,33 +113,25 @@
 
 <script setup lang='ts'>
 import { ref, computed, onMounted } from 'vue';
+import type { Static } from '@sinclair/typebox';
+import { Issue, Health } from '../types.ts'
 import {
+    TablerNone,
     TablerLoading,
+    TablerMarkdown,
     TablerIconButton
 } from '@tak-ps/vue-tabler';
 import {
+    IconX,
     IconRefresh,
     IconAlertTriangle,
     IconCircleCheck
 } from '@tabler/icons-vue';
 
-const globalHealth = ref('green'); // green, yellow, red
+const globalHealth = ref(Health.GREEN);
 const requestDate = ref(new Date());
 const loading = ref(true);
-
-type Service = {
-    id: string;
-    name: string;
-    health?: string;
-    dates?: Array<{
-        date: Date,
-        health: string;
-    }>
-};
-
-type Config = {
-    services: Service[]
-}
+const individual = ref<string | undefined>();
 
 onMounted(async () => {
     await refresh();
@@ -131,11 +142,11 @@ const config = ref<Config>({
 })
 
 function healthVerb(health: string) {
-    if (health === 'yellow') {
+    if (health === Health.YELLOW) {
         return 'degraded'
-    } else if (health === 'red') {
+    } else if (health === Health.RED) {
         return 'impacted'
-    } else if (health === 'green') {
+    } else if (health === Health.GREEN) {
         return 'healthy'
     } else {
         return 'unknown';
@@ -145,13 +156,13 @@ function healthVerb(health: string) {
 async function refresh() {
     loading.value = true;
 
-    globalHealth.value = 'green'
+    globalHealth.value = Health.GREEN
 
     const res = await fetch(window.location.pathname + 'config.json');
     config.value = await res.json() as Config;
 
     for (const service of config.value.services) {
-        service.health = 'green';
+        service.health = Health.GREEN;
 
         const dates: Map<string, {
             health: string;
@@ -162,10 +173,12 @@ async function refresh() {
 
         for (let i = 0; i < 30; i++) {
             const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
-            dates.set(`${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()}`, { health: 'green', date });
+            dates.set(`${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()}`, { health: Health.GREEN, date });
         }
 
-        for (const issue of service.issues) {
+        for (const issueid of service.issues) {
+            const issue = await fetchIssue(config.value.repo, issueid);
+
             if (!issue.end) {
                 if (["green", "yellow"].includes(globalHealth.value) && issue.severity === "red") {
                     globalHealth.value = "red";
@@ -197,6 +210,18 @@ async function refresh() {
     }
 
     loading.value = false;
+}
+
+async function fetchIssue(repo, issueid): Promise<Static<typeof Issue>> {
+    const res = await fetch(`https://api.github.com/repos/${repo}/issues/${issueid}`)
+
+    const issue = await res.json()
+
+    return {
+        start: issue.created_at,
+        end: issue.closed_at,
+        body: issue.body
+    };
 }
 
 function daysBetween(startDate: string, endDate?: string): Array<string> {

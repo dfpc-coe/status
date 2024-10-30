@@ -10,7 +10,7 @@
         "lint": "eslint ./src/"
     },
     "dependencies": {
-        "@sinclair/typebox": "^0.33.15",
+        "@sinclair/typebox": "^0.33.17",
         "@tabler/core": "^1.0.0-beta16",
         "@tabler/icons-vue": "^3.0.0",
         "@tak-ps/vue-tabler": "^3.55.2",
