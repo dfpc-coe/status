@@ -1,20 +1,29 @@
 {
     "repo": "dfpc-coe/status",
-    "services": [{
-        "id": "cotak",
-        "name": "COTAK.gov",
-        "issues": []
-    },{
-        "id": "tak",
-        "name": "TAK Server",
-        "issues": [1]
-    },{
-        "id": "ldap",
-        "name": "Active Directory Service",
-        "issues": []
-    },{
-        "id": "cloudtak",
-        "name": "CloudTAK",
-        "issues": []
-    }]
+    "services": [
+        {
+            "id": "cotak",
+            "name": "COTAK.gov",
+            "issues": [
+                1
+            ]
+        },
+        {
+            "id": "tak",
+            "name": "TAK Server",
+            "issues": []
+        },
+        {
+            "id": "ldap",
+            "name": "Active Directory Service",
+            "issues": [
+                1
+            ]
+        },
+        {
+            "id": "cloudtak",
+            "name": "CloudTAK",
+            "issues": []
+        }
+    ]
 }
