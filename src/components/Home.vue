@@ -222,6 +222,9 @@ async function refresh() {
 }
 
 async function fetchIssue(repo, issueid): Promise<Static<typeof Issue>> {
+    const url = new URL(`https://api.github.com/repos/${repo}/issues/${issueid}`)
+    url.searchParams.append('cacheBuster', +new Date());
+
     const res = await fetch(`https://api.github.com/repos/${repo}/issues/${issueid}`)
 
     const issue = await res.json()
