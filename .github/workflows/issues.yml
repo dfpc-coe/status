@@ -2,14 +2,15 @@ name: Github Pages
 
 on:
   issues:
-    - opened
-    - edited
-    - deleted
-    - transferred
-    - closed
-    - reopened
-    - labeled
-    - unlabeled
+    types: 
+      - opened
+      - edited
+      - deleted
+      - transferred
+      - closed
+      - reopened
+      - labeled
+      - unlabeled
 
 permissions:
   contents: write
