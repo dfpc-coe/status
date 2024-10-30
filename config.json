@@ -5,6 +5,7 @@
             "id": "cotak",
             "name": "COTAK.gov",
             "issues": [
+                1,
                 1
             ]
         },
@@ -17,6 +18,7 @@
             "id": "ldap",
             "name": "Active Directory Service",
             "issues": [
+                1,
                 1
             ]
         },

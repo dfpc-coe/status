@@ -3,6 +3,7 @@
     "username": "ingalls",
     "health": "red",
     "start": "2024-10-30T00:32:41Z",
+    "end": "2024-10-30T15:21:37Z",
     "title": "Test Degraded Performance",
     "body": "### Context\r\n\r\nThis is a test of degraded performance 123345\r\n\r\nThe TAK Server is experiencing difficulties"
 }
