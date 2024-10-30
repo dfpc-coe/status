@@ -33,4 +33,4 @@ jobs:
       - name: node actions.js
         run: node actions.js
         env:
-          GITHUB_ISSUE: {{ github.event.issue }}
+          GITHUB_ISSUE: ${{ github.event.issue }}
