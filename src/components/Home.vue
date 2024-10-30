@@ -144,9 +144,9 @@
                             :create='false'
                         />
                         <template
-                            :key='issue.id'
                             v-for='issue in serviceDate.issues'
                             v-else
+                            :key='issue.id'
                         >
                             <h1 v-text='issueMap.get(issue) ? issueMap.get(issue).title : "No Title"' />
                             <TablerMarkdown :markdown='issueMap.get(issue) ? issueMap.get(issue).body : ""' />
