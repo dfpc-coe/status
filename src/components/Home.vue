@@ -265,27 +265,9 @@ async function refresh() {
 }
 
 async function fetchIssue(repo, issueid): Promise<Static<typeof Issue>> {
-    const url = new URL(`https://api.github.com/repos/${repo}/issues/${issueid}`)
-    url.searchParams.append('cacheBuster', +new Date());
+    const res = await fetch(window.location.pathname + `issues/${issueid}.json`)
 
-    const res = await fetch(`https://api.github.com/repos/${repo}/issues/${issueid}`)
-
-    const issue = await res.json()
-
-    let health = Health.GREEN;
-
-    const labels = issue.labels.map((label) => { return label.description });
-
-    if (labels.includes('red')) health = Health.RED;
-    if (labels.includes('yellow')) health = Health.YELLOW;
-
-    return {
-        health,
-        start: issue.created_at,
-        end: issue.closed_at || undefined,
-        title: issue.title,
-        body: issue.body
-    };
+    return await res.json() as Static<typeof Issue>;
 }
 
 function daysBetween(startDate: string, endDate?: string): Array<string> {

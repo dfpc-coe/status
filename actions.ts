@@ -1,5 +1,6 @@
 import fs from 'node:fs';
-import { Health } from './src/types.js';
+import { Static } from '@sinclair/typebox';
+import { Issue, Health } from './src/types.js';
 
 if (!process.env.GITHUB_ISSUE) throw new Error('GITHUB_ISSUE Env Var must be set')
 
@@ -16,7 +17,7 @@ if (!fs.existsSync(new URL('issues/', import.meta.url))){
     fs.mkdirSync(new URL('issues/', import.meta.url));
 }
 
-fs.writeFileSync(new URL(`issues/${issue.number}.json`, import.meta.url), JSON.stringify({
+const issue: Static<typeof Issue> = {
     id: issue.number,
     username: issue.user.login,
     health,
@@ -24,8 +25,16 @@ fs.writeFileSync(new URL(`issues/${issue.number}.json`, import.meta.url), JSON.s
     end: issue.closed_at || undefined,
     title: issue.title,
     body: issue.body
-}, null, 4));
+}
+
+fs.writeFileSync(new URL(`issues/${issue.number}.json`, import.meta.url), JSON.stringify(issue, null, 4));
 
 const config = JSON.parse(String(fs.readFileSync(new URL(`./config.json`, import.meta.url))))
 
-console.error(config);
+for (const service of services) {
+    if (labels.includes(service.id)) {
+        service.issues.push(issue.id)
+    }
+}
+
+fs.writeFileSync(new URL(`./config.json`, import.meta.url), JSON.stringify(config, null, 4))
