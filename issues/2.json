@@ -4,5 +4,5 @@
     "health": "red",
     "start": "2024-10-30T16:51:06Z",
     "title": "Media Server Persistance",
-    "body": "### Context\r\n\r\nAn undesired behavior was identified in our deployment of the Media Server resulting in a lack of persistance of config file when changes were made via the CloudTAK Interface.\r\n\r\nRequests to the Media Server for both write and read clients will fail."
+    "body": "### Context\r\n\r\nAn undesired behavior was identified in our deployment of the Media Server resulting in a lack of persistence of config file when changes were made via the CloudTAK Interface.\r\n\r\nRequests to the Media Server for both write and read clients will fail.\r\n\r\n### Resolved\r\n\r\nThis issue has been resolved with the deployment of a persistance script which will run every 10s and persist the API paths to the on-disk config file\r\n\r\nRef: https://github.com/dfpc-coe/media-infra/pull/5"
 }
