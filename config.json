@@ -24,7 +24,9 @@
         {
             "id": "media",
             "name": "Media Server",
-            "issues": []
+            "issues": [
+                2
+            ]
         }
     ]
 }
