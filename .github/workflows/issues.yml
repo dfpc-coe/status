@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: write
+  pages: write
   id-token: write
 
 jobs:
@@ -47,3 +48,18 @@ jobs:
           message: Update Issue Database
           committer_name: GitHub Actions
           committer_email: actions@github.com
+
+      - name: npm run build
+        run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
