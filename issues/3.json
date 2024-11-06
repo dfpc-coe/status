@@ -4,5 +4,5 @@
     "health": "yellow",
     "start": "2024-11-06T21:17:49Z",
     "title": "CloudTAK CSP",
-    "body": "### Context\r\n\r\nA Content-Security-Policy issue was identified that restricts valid requests on certain user actions in CloudTAK.\r\nThe problem has been identified and a fix is being deployed."
+    "body": "### Context\r\n\r\nA Content-Security-Policy issue was identified that restricts valid requests on certain user actions in CloudTAK.\r\nThe problem has been identified and a fix is being deployed.\r\n\r\nThis issue has been resolved."
 }
