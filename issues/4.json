@@ -3,6 +3,7 @@
     "username": "ingalls",
     "health": "red",
     "start": "2024-11-19T18:22:31Z",
+    "end": "2024-11-19T19:45:18Z",
     "title": "Major Outage",
     "body": "Due to internal account Rate Limiting the CloudTAK Service has been heavily impacted and is struggling to return to a healthy state.\n\n11:20: Engineers have determined root cause and are working on a fix\n12:44: A fix has been fully deployed and service has been restored."
 }
