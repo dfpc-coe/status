@@ -1,0 +1,8 @@
+{
+    "id": 5,
+    "username": "ingalls",
+    "health": "yellow",
+    "start": "2024-12-10T20:08:03Z",
+    "title": "Database Latency",
+    "body": "### Context\n\nUnexpected latency on a TAK Server API call has resulted in general latency across the TAK & CloudTAK Services. We have terminated the largest service that uses the affected API and are working to determine root cause and mitigate impact"
+}
