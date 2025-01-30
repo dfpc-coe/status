@@ -1,0 +1,8 @@
+{
+    "id": 6,
+    "username": "ingalls",
+    "health": "red",
+    "start": "2025-01-30T23:10:29Z",
+    "title": "ETL Functionality Impacted",
+    "body": "### Context\n\nWe are experiencing Rate Limiting behavior on COTAK Production ETL Layers resulting in degradation for incoming data from external sources"
+}
